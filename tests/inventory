@@ -1,0 +1,7 @@
+[clickhouse]
+server01 ansible_host=server01.domain.com
+server02 ansible_host=server02.domain.com
+server03 ansible_host=server03.domain.com
+server04 ansible_host=server04.domain.com
+server05 ansible_host=server05.domain.com
+server06 ansible_host=server06.domain.com

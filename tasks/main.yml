@@ -1,0 +1,42 @@
+---
+- include_tasks: lvm.yml
+  tags: [disk]
+
+- include_tasks: mkfs.yml
+  tags: [disk]
+
+- include_tasks: mount.yml
+  tags: [disk]
+
+- include_tasks: fstab.yml
+  tags: [disk]
+
+- include_tasks: zookeeper.yml
+  args:
+    apply:
+      tags: [zookeeper]
+  tags: [zookeeper]
+
+- include_tasks: clickhouse.yml
+  args:
+    apply:
+      tags: [clickhouse]
+  tags: [clickhouse]
+
+- include_tasks: carbon-clickhouse.yml
+  args:
+    apply:
+      tags: [carbon-clickhouse]
+  tags: [carbon-clickhouse]
+
+- include_tasks: graphite-clickhouse.yml
+  args:
+    apply:
+      tags: [graphite-clickhouse]
+  tags: [graphite-clickhouse]
+
+- include_tasks: carbonapi.yml
+  args:
+    apply:
+      tags: [carbonapi]
+  tags: [carbonapi]

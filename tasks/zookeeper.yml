@@ -1,0 +1,57 @@
+- name: Install Zookeeper and Java
+  apt:
+    name: "{{ zookeeper_apt_packages }}"
+    state: present
+    update_cache: yes
+    cache_valid_time: 86400
+
+- name: Create directory for snapshot files and myid file
+  file:
+    path: '{{ zookeeper_data_dir }}'
+    state: directory
+    group: '{{ zookeeper_group }}'
+    owner: '{{ zookeeper_user }}'
+
+- name: Create directory for transaction log files
+  file:
+    path: '{{ zookeeper_data_log_dir }}'
+    state: directory
+    group: '{{ zookeeper_group }}'
+    owner: '{{ zookeeper_user }}'
+
+- name: Create Zookeeper log directory
+  file:
+    path: '{{ zookeeper_log_dir }}'
+    state: directory
+    group: '{{ zookeeper_group }}'
+    owner: '{{ zookeeper_user }}'
+
+- name: Put Zookeeper service definition
+  template:
+    src: zookeeper.service.j2
+    dest: /etc/systemd/system/zookeeper.service
+
+- name: Template configuration file to zoo.cfg
+  template:
+    src: zoo.cfg.j2
+    dest: /etc/zookeeper/conf/zoo.cfg
+  notify:
+    - Restart ZooKeeper
+
+- name: Write zookeper id to {{ zookeeper_data_dir }}/myid
+  lineinfile:
+    path: '{{ zookeeper_data_dir }}/myid'
+    regexp: '^.*$'
+    line: "{{ clickhouse_hosts.index(inventory_hostname) + 1 }}"
+    create: yes
+    owner: '{{ zookeeper_user }}'
+    group: '{{ zookeeper_group }}'
+  notify:
+    - Restart ZooKeeper
+
+- name: Start & enable ZooKeeper
+  systemd:
+    name: zookeeper.service
+    enabled: yes
+    state: started
+    daemon_reload: yes

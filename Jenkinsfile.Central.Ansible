@@ -1,0 +1,5 @@
+#!groovy
+@Library('jenkins-library-functions@develop') _
+standardCentralAnsibleBuild {
+    team = com.leonteq.jenkins.Team.DEVOPS_GUILD
+}

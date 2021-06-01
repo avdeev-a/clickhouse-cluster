@@ -1,0 +1,34 @@
+# This is required to sort clickhouse hosts
+# https://github.com/ansible/ansible/issues/34861
+clickhouse_hosts: "{{ groups['clickhouse'] | sort }}"
+
+# -------- zookeeper
+zookeeper_group: zookeeper
+zookeeper_user: zookeeper
+zookeeper_apt_packages:
+  - zookeeperd
+  - zookeeper
+  - openjdk-8-jre-headless
+zookeeper_log_dir: /var/log/app/zookeeper
+zookeeper_data_dir: /opt/data/zookeeper
+zookeeper_data_log_dir: /opt/data/zookeeper/data_log
+zookeeper_client_port: 2181
+zookeeper_leader_port: 2888 
+zookeeper_election_port: 3888
+
+# -------- clickhouse
+clickhouse_conf_d: /etc/clickhouse-server/config.d
+clickhouse_log_d: /var/log/app/clickhouse-server
+data_device: /dev/sdd
+applog_device: /dev/sdb
+clh_mount_data_dir: /opt/data
+clh_mount_log_dir: /var/log/app
+clickhouse_apt_packages:
+  - ca-certificates
+  - clickhouse-client
+  - clickhouse-server-common
+  - clickhouse-server-base
+clickhouse_system_user:  clickhouse
+clickhouse_system_group: clickhouse
+clickhouse_log_level: error
+clickhouse_listen_address: "0.0.0.0"

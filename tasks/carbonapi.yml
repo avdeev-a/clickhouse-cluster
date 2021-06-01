@@ -1,0 +1,25 @@
+- name: Install carbonapi service
+  apt:
+    name: carbonapi
+    state: present
+
+- name: Create carbonapi directories
+  file:
+    path: "{{ item }}"
+    state: directory
+  loop:
+    - /var/log/app/carbonapi
+    - /etc/carbonapi
+
+- name: Put carbonapi config
+  template:
+    src: carbonapi.yml.j2
+    dest: /etc/carbonapi/carbonapi.yaml
+  notify: ["Restart carbonapi"]
+
+- name: Enable carbonapi service
+  systemd:
+    name: carbonapi.service
+    state: started
+    enabled: yes
+    daemon-reload: yes

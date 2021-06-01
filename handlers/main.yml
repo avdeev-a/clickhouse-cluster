@@ -1,0 +1,24 @@
+- name: Restart ZooKeeper
+  systemd:
+    name: zookeeper.service
+    state: restarted
+
+- name: Restart ClickHouse
+  systemd:
+    name: clickhouse-server
+    state: restarted
+
+- name: Restart carbon-clickhouse
+  systemd:
+    name: carbon-clickhouse
+    state: restarted
+
+- name: Restart graphite-clickhouse
+  systemd:
+    name: graphite-clickhouse.service
+    state: started
+
+- name: Restart carbonapi
+  systemd:
+    name: carbonapi.service
+    state: started

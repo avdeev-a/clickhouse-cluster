@@ -1,0 +1,59 @@
+listen: "0.0.0.0:7070"
+# prefix: ""
+# headersToPass:
+# headersToLog:
+# notFoundStatusCode:
+# define:
+# unicodeRangeTables:
+cache:
+  type: 'null'
+cpus: 1
+# tz:
+# functionsConfig:
+graphite:
+  host: localhost:2003
+  interval: 60s
+  prefix: stats.carbonapi
+  pattern: "{prefix}.{fqdn}"
+pidFile: /var/run/carbonapi/carbonapi.pid
+# graphTemplates: 
+# defaultColors:
+expvar:
+  enabled: false
+logger:
+- encoding: console
+  file: /var/log/app/carbonapi/carbonapi.log
+  level: info
+  logger: 'file'
+concurency: 20
+idleConnections: 10
+maxBatchSize: 100
+sendGlobsAsIs: true
+upstreams:
+  graphite09compat: false
+  buckets: 10
+  concurrencyLimitPerServer: 0
+  keepAliveInterval: "30s"
+  maxIdleConnsPerHost: 100
+  timeouts:
+    find: "2s"
+    render: "10s"
+    connect: "200ms"
+  backendsv2:
+    backends:
+      - groupName: "localhost"
+        protocol: "carbonapi_v2_pb"
+        lbMethod: "rr"
+        maxTries: 3
+        maxBatchSize: 0
+        keepAliveInterval: "10s"
+        concurrencyLimit: 0
+        maxIdleConnsPerHost: 1000
+        timeouts:
+            find: "2s"
+            render: "50s"
+            connect: "200ms"
+        servers:
+        {% for host in clickhouse_hosts %}
+          - "http://{{ hostvars[host]['ansible_host'] }}:9090"
+        {% endfor %}

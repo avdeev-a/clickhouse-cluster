@@ -1,0 +1,85 @@
+- name: Install dependencies for apt_key
+  apt:
+    name: [gpg, apt-transport-https]
+
+- name: Install ClickHouse packages
+  apt:
+    name: "{{ clickhouse_apt_packages }}"
+    update_cache: yes
+    cache_valid_time: 84600
+
+- name: Create ClickHouse data directory
+  file:
+    path: /opt/data/clickhouse
+    state: directory
+    owner: '{{ clickhouse_system_user }}'
+    group: '{{ clickhouse_system_group }}'
+
+- name: Create ClickHouse conf directory
+  file:
+    path: "{{ clickhouse_conf_d }}"
+    state: directory
+    owner: '{{ clickhouse_system_user }}'
+    group: '{{ clickhouse_system_group }}'
+
+- name: Create ClickHouse log directory
+  file:
+    path: "{{ clickhouse_log_d }}"
+    state: directory
+    owner: '{{ clickhouse_system_user }}'
+    group: '{{ clickhouse_system_group }}'
+
+- name: Put configuration templates
+  template:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    owner: "{{ clickhouse_system_user }}"
+    group: "{{ clickhouse_system_group }}"
+  loop:
+    - src: clickhouse/macro.xml.j2
+      dest: "{{ clickhouse_conf_d }}/macro.xml"
+    - src: clickhouse/remote.xml.j2
+      dest: "{{ clickhouse_conf_d }}/remote.xml"
+    - src: clickhouse/zookeeper.xml.j2
+      dest: "{{ clickhouse_conf_d }}/zookeeper.xml"
+    - src: clickhouse/config.xml.j2
+      dest: /etc/clickhouse-server/config.xml
+    - src: clickhouse/users.xml.j2
+      dest: "{{ clickhouse_conf_d }}/users.xml"
+
+- name: Copy graphite_rollup configuration to CH machines
+  copy:
+    src: configs/graphite_rollup.xml
+    dest: "/etc/clickhouse-server/graphite_rollup.xml"
+    owner: "{{ clickhouse_system_user }}"
+    group: "{{ clickhouse_system_group }}"
+  notify:
+    - Restart ClickHouse
+
+- name: Start ClickHouse
+  systemd:
+    name: clickhouse-server
+    state: started
+    enabled: yes
+    daemon_reload: yes
+
+- name: Show ClickHouse databases
+  shell: |
+    set -o pipefail
+    echo 'show databases' | clickhouse-client
+  args:
+    executable: /bin/bash
+  changed_when: no
+  register: show_databases
+
+- name: Put tables initiation script
+  copy:
+    src: configs/replica.sql
+    dest: /etc/clickhouse-server/
+  when: "'graphite' not in show_databases.stdout_lines"
+
+- name: Create Database and additional tables
+  shell: set -o pipefail; cd /etc/clickhouse-server && cat replica.sql | clickhouse-client -mn
+  args:
+    executable: /bin/bash
+  when: "'graphite' not in show_databases.stdout_lines"

@@ -1,0 +1,21 @@
+- name: Install graphite-clickhouse backend service
+  apt:
+    name: graphite-clickhouse=0.11.7
+
+- name: Copy graphite-clickhouse configuration
+  copy:
+    src: configs/graphite-clickhouse.conf
+    dest: /etc/graphite-clickhouse/
+  notify: [Restart graphite-clickhouse]
+
+- name: Create log directory
+  file:
+    path: /var/log/app/graphite-clickhouse
+    state: directory
+
+- name: Enable & start graphite-clickhouse service
+  systemd:
+    name: graphite-clickhouse.service
+    state: started
+    enabled: yes
+    daemon_reload: yes

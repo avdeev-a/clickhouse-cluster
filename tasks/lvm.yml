@@ -1,0 +1,23 @@
+---
+# tasks file for vm/roles/disk
+- name: Create data lvg "{{ data_device }}"
+  lvg:
+    vg: data
+    pvs: "{{ data_device }}"
+
+- name: Create data lvol
+  lvol:
+    vg: data
+    lv: data
+    size: +100%FREE
+
+- name: Create logs lvg "{{ applog_device }}"
+  lvg:
+    vg: applog
+    pvs: "{{ applog_device }}"
+
+- name: Create log lvol
+  lvol:
+    vg: applog
+    lv: applog
+    size: +100%FREE

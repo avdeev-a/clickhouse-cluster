@@ -1,0 +1,30 @@
+---
+# tasks file for vm/roles/disk
+
+- name: Create /opt/data
+  file:
+    path: /opt/data
+    state: directory
+
+- name: Setup and mount /opt/data
+  mount:
+    path: "{{ clh_mount_data_dir }}"
+    src: /dev/data/data
+    fstype: ext4
+    opts: noatime,nodiratime
+    passno: '2'
+    state: mounted
+
+- name: Create /var/log/app
+  file:
+    path: /var/log/app
+    state: directory
+
+- name: Setup and mount /var/log/app
+  mount:
+    path: "{{ clh_mount_log_dir }}"
+    src: /dev/applog/applog
+    fstype: ext4
+    opts: noatime,nodiratime
+    passno: '2'
+    state: mounted

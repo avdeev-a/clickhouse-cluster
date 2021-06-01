@@ -1,0 +1,12 @@
+---
+# tasks file for vm/roles/disk
+
+- name: Create ext4 filesystem on /dev/data/data
+  filesystem:
+    fstype: ext4
+    dev: /dev/data/data
+
+- name: Create ext4 filesystem on /dev/applog/applog
+  filesystem:
+    fstype: ext4
+    dev: /dev/applog/applog
