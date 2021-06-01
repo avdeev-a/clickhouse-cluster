@@ -13,7 +13,7 @@ zookeeper_log_dir: /var/log/app/zookeeper
 zookeeper_data_dir: /opt/data/zookeeper
 zookeeper_data_log_dir: /opt/data/zookeeper/data_log
 zookeeper_client_port: 2181
-zookeeper_leader_port: 2888 
+zookeeper_leader_port: 2888
 zookeeper_election_port: 3888
 
 # -------- clickhouse

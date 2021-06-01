@@ -1,5 +1,5 @@
 ---
-- hosts: '{{ target }}'
+- hosts: '{{ clickhouse }}'
   remote_user: root
   roles:
     - clickhouse-cluster
